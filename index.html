@@ -3,110 +3,90 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>QR con logo y compartir</title>
+<title>QR con logo y ojos redondeados</title>
 <style>
   body{font-family:sans-serif;background:#f5f5f5;padding:20px}
   .card{background:#fff;padding:20px;max-width:500px;margin:auto;
         border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-  canvas{display:block;margin:20px auto;border:1px solid #ddd}
-  input,button{padding:10px;font-size:16px;margin:6px 0}
-  .share-buttons{display:none;gap:10px;justify-content:center;margin-top:10px}
-  .share-buttons button{background:#0b69ff;color:#fff;border:none;border-radius:8px;cursor:pointer;padding:10px 14px;font-weight:600}
+  #qr{display:flex;justify-content:center;margin:20px 0}
+  input,button{padding:10px;font-size:16px;margin:6px 0;width:100%}
+  button{background:#0b69ff;color:#fff;border:none;border-radius:8px;
+         cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
 <div class="card">
-  <h1>Generador de QR con logo centrado</h1>
-  <input id="text" type="text" placeholder="Texto o URL" style="width:100%">
+  <h1>Generador de QR con logo y ojos redondeados</h1>
+  <input id="text" type="text" placeholder="Texto o URL">
   <button id="gen">Generar QR</button>
-  <canvas id="qrCanvas" width="300" height="300"></canvas>
-  <div class="share-buttons" id="shareBtns">
-    <button id="whatsappBtn">Compartir por WhatsApp</button>
-    <button id="instagramBtn">Compartir en Instagram</button>
-  </div>
+  <div id="qr"></div>
+  <button id="shareBtn" style="display:none;">Compartir QR</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- qrcode-styling desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-styling@1.6.0/lib/umd/index.min.js"></script>
 <script>
-const btn = document.getElementById('gen');
-const canvas = document.getElementById('qrCanvas');
-const ctx = canvas.getContext('2d');
-const shareBtns = document.getElementById('shareBtns');
-const whatsappBtn = document.getElementById('whatsappBtn');
-const instagramBtn = document.getElementById('instagramBtn');
+const genBtn = document.getElementById('gen');
+const qrContainer = document.getElementById('qr');
+const shareBtn = document.getElementById('shareBtn');
 
-btn.addEventListener('click', () => {
+let qrCode; // guardaremos la instancia
+
+genBtn.addEventListener('click', () => {
   const text = document.getElementById('text').value.trim();
   if(!text){ alert('Escribe un texto'); return; }
 
-  // Generar QR en un elemento temporal
-  const tmpDiv = document.createElement('div');
-  new QRCode(tmpDiv, {
-    text: text,
+  // Si ya existe un QR previo, eliminarlo
+  qrContainer.innerHTML = '';
+
+  qrCode = new QRCodeStyling({
     width: 300,
     height: 300,
-    colorDark: '#000000',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.H
+    type: 'canvas',
+    data: text,
+    image: 'logo.jpg',
+    imageOptions: {
+      crossOrigin: 'anonymous',
+      margin: 8      // margen negro alrededor del logo
+    },
+    dotsOptions: {
+      color: '#000000',
+      type: 'rounded' // puntos redondeados
+    },
+    cornersSquareOptions: {
+      type: 'extra-rounded', // Ojos (detectores) redondeados
+      color: '#000000'
+    },
+    cornersDotOptions: {
+      type: 'dot',
+      color: '#000000'
+    },
+    backgroundOptions: {
+      color: '#ffffff'
+    }
   });
-  const img = tmpDiv.querySelector('img');
-  img.onload = () => drawWithLogo(img, text);
+
+  qrCode.append(qrContainer);
+  shareBtn.style.display = 'block';
 });
 
-function drawWithLogo(qrImg,text){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(qrImg,0,0,canvas.width,canvas.height);
+shareBtn.addEventListener('click', async ()=>{
+  if (!qrCode) return;
 
-  const logo = new Image();
-  logo.src = 'logo.png';  // tu logo en la misma carpeta
-  logo.onload = ()=>{
-    const logoSize = canvas.width * 0.3; // 30% del ancho
-    const x = (canvas.width - logoSize) / 2;
-    const y = (canvas.height - logoSize) / 2;
-    const margin = 8;
+  // Exportar a blob para compartir
+  const blob = await qrCode.getRawData('png');
 
-    ctx.fillStyle = '#000';
-    ctx.fillRect(x - margin/2, y - margin/2, logoSize + margin, logoSize + margin);
-    ctx.drawImage(logo, x, y, logoSize, logoSize);
-
-    // mostrar botones de compartir
-    shareBtns.style.display = 'flex';
-  };
-}
-
-// compartir por WhatsApp
-whatsappBtn.addEventListener('click', ()=>{
-  const imgData = canvas.toDataURL('image/png');
-  // Web Share API si existe (móvil)
-  if (navigator.share) {
-    canvas.toBlob(blob=>{
-      const file = new File([blob], 'qr.png', {type:'image/png'});
-      navigator.share({
-        files: [file],
-        title: 'Código QR',
-        text: 'Aquí está el código QR que generé'
-      });
+  if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'qr.png', {type:'image/png'})] })) {
+    const file = new File([blob], 'qr.png', { type: 'image/png' });
+    navigator.share({
+      files: [file],
+      title: 'Código QR',
+      text: 'Aquí está el código QR que generé'
     });
   } else {
-    // Fallback: enlace a WhatsApp web (solo envía texto)
-    const text = 'Mira este código QR: (adjunta la imagen manualmente)\n';
+    // Fallback: enlace de WhatsApp sólo con texto
+    const text = 'Mira este código QR: (adjunta la imagen manualmente)';
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,'_blank');
-  }
-});
-
-// compartir en Instagram
-instagramBtn.addEventListener('click', ()=>{
-  if (navigator.share) {
-    canvas.toBlob(blob=>{
-      const file = new File([blob], 'qr.png', {type:'image/png'});
-      navigator.share({
-        files: [file],
-        title: 'Código QR',
-        text: 'Aquí está el código QR que generé'
-      });
-    });
-  } else {
-    alert('Para Instagram no hay enlace directo desde el navegador. Usa el botón nativo de compartir si tu dispositivo lo permite.');
   }
 });
 </script>
