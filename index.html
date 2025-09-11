@@ -58,7 +58,7 @@ function drawWithLogo(qrImg,text){
   ctx.drawImage(qrImg,0,0,canvas.width,canvas.height);
 
   const logo = new Image();
-  logo.src = 'logo.jpg';  // tu logo en la misma carpeta
+  logo.src = 'logo.png';  // tu logo en la misma carpeta
   logo.onload = ()=>{
     const logoSize = canvas.width * 0.3; // 30% del ancho
     const x = (canvas.width - logoSize) / 2;
