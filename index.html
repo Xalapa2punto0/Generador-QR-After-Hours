@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>QR con logo de fondo</title>
+<title>QR con logo centrado</title>
 <style>
   body{font-family:sans-serif;background:#f5f5f5;padding:20px}
   .card{background:#fff;padding:20px;max-width:500px;margin:auto;
@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="card">
-  <h1>Generador de QR con logo de fondo</h1>
+  <h1>Generador de QR con logo centrado</h1>
   <input id="text" type="text" placeholder="Texto o URL" style="width:100%">
   <button id="gen">Generar QR</button>
   <canvas id="qrCanvas" width="300" height="300"></canvas>
@@ -30,7 +30,7 @@ btn.addEventListener('click', () => {
   const text = document.getElementById('text').value.trim();
   if(!text){ alert('Escribe un texto'); return; }
 
-  // 1️⃣ Generar QR en un canvas oculto
+  // Generar QR en un elemento temporal
   const tmpDiv = document.createElement('div');
   new QRCode(tmpDiv, {
     text: text,
@@ -47,16 +47,24 @@ btn.addEventListener('click', () => {
 function drawWithLogo(qrImg){
   // limpiar lienzo
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  // 2️⃣ Dibujar QR completo
+  // dibujar QR completo
   ctx.drawImage(qrImg,0,0,canvas.width,canvas.height);
 
-  // 3️⃣ Cargar y dibujar logo con transparencia
+  // cargar logo
   const logo = new Image();
-  logo.src = 'logo.jpg';   // coloca tu archivo de logo en la misma carpeta
+  logo.src = 'logo.jpg';  // nombre de tu archivo de logo
   logo.onload = ()=>{
-    ctx.globalAlpha = 0.15;   // transparencia para que no bloquee el escaneo
-    ctx.drawImage(logo,0,0,canvas.width,canvas.height);
-    ctx.globalAlpha = 1;      // restaurar opacidad para futuros dibujados
+    const logoSize = canvas.width * 0.3; // logo al 30% del ancho del QR
+    const x = (canvas.width - logoSize) / 2;
+    const y = (canvas.height - logoSize) / 2;
+    const margin = 8; // grosor del margen negro
+
+    // Dibujar marco negro
+    ctx.fillStyle = '#000';
+    ctx.fillRect(x - margin/2, y - margin/2, logoSize + margin, logoSize + margin);
+
+    // Dibujar logo encima del marco
+    ctx.drawImage(logo, x, y, logoSize, logoSize);
   };
 }
 </script>
