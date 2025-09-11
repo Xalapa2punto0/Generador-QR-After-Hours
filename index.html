@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Generador de QR - Introduce un nombre</title>
+  <style>
+    :root{--bg:#f7f9fc;--card:#ffffff;--accent:#0b69ff;--muted:#6b7280}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#0f172a}
+    .wrap{max-width:880px;margin:40px auto;padding:20px}
+    .card{background:var(--card);border-radius:12px;padding:22px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+    h1{margin:0 0 8px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .row{display:flex;gap:12px;align-items:center}
+    .col{flex:1}
+    input[type=text]{width:100%;padding:12px;border-radius:8px;border:1px solid #e6e9ef;font-size:16px}
+    button{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;font-weight:600;cursor:pointer}
+    button[disabled]{opacity:0.6;cursor:not-allowed}
+    .qr-area{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px;border-radius:8px;border:1px dashed #e6e9ef;background:#fbfdff}
+    .note{font-size:13px;color:var(--muted)}
+    #qrcode{width:220px;height:220px;display:flex;align-items:center;justify-content:center}
+    .controls{display:flex;gap:8px}
+    .download{background:#111827}
+    @media(max-width:640px){.row{flex-direction:column}.wrap{margin:20px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Generador de código QR</h1>
+      <p class="lead">Introduce un nombre (o cualquier texto) y genera un código QR. Descárgalo como imagen o compártelo.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start">
+        <div>
+          <label for="nameInput" style="font-weight:600">Nombre / Texto</label>
+          <div style="margin-top:8px" class="row">
+            <input id="nameInput" type="text" placeholder="Escribe un nombre o texto..." />
+            <button id="generateBtn">Generar</button>
+          </div>
+
+          <p class="note" style="margin-top:12px">Puedes escribir nombres cortos o frases. El QR encodifica exactamente el texto que pongas.</p>
+        </div>
+
+        <div>
+          <div class="qr-area">
+            <div id="qrcode" aria-hidden="true">(QR se mostrará aquí)</div>
+            <div style="display:flex;gap:8px">
+              <button id="downloadBtn" class="download" disabled>Descargar PNG</button>
+              <button id="copyBtn" disabled>Copiar texto</button>
+            </div>
+            <div class="note">Tamaño por defecto: 220×220 px. Ajusta el texto para cambiar el contenido.</div>
+          </div>
+        </div>
+      </div>
+
+      <hr style="margin:18px 0;border:0;border-top:1px solid #eef2ff" />
+      <p class="note">Archivo listo para subir a GitHub Pages: guarda este archivo como <code>index.html</code> y súbelo al repositorio.<br>Si quieres que el QR apunte a una URL (por ejemplo: https://tusitio.com/?nombre=...), dímelo y lo adapto.</p>
+    </div>
+  </div>
+
+  <!-- QRCode.js desde CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const input = document.getElementById('nameInput');
+    const genBtn = document.getElementById('generateBtn');
+    const qrcodeContainer = document.getElementById('qrcode');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    let qr;
+
+    function clearQR(){ qrcodeContainer.innerHTML = ''; qr = null; }
+
+    function generate(text){
+      clearQR();
+      qr = new QRCode(qrcodeContainer, {
+        text: text || ' ',
+        width: 220,
+        height: 220,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+n      });
+
+      // Habilita botones
+      downloadBtn.disabled = false;
+      copyBtn.disabled = false;
+    }
+
+    genBtn.addEventListener('click', ()=>{
+      const text = input.value.trim();
+      if(!text){
+        alert('Escribe un nombre o texto antes de generar.');
+        return;
+      }
+      generate(text);
+    });
+
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ genBtn.click(); }});
+
+    downloadBtn.addEventListener('click', ()=>{
+      if(!qr) return;
+      // QRCode.js genera un <img> o <canvas> dentro del contenedor
+      const img = qrcodeContainer.querySelector('img');
+      const canvas = qrcodeContainer.querySelector('canvas');
+      let dataURL = null;
+      if(img) dataURL = img.src;
+      else if(canvas) dataURL = canvas.toDataURL('image/png');
+      if(!dataURL){ alert('No se pudo obtener la imagen del QR.'); return; }
+
+      const a = document.createElement('a');
+      a.href = dataURL;
+      const safeName = input.value.trim().replace(/[^a-z0-9-_\.]/gi,'_') || 'qr';
+      a.download = safeName + '.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(input.value.trim());
+        alert('Texto copiado al portapapeles.');
+      }catch(e){
+        alert('No se pudo copiar automáticamente. Selecciona y copia manualmente.');
+      }
+    });
+
+    // Generar un QR inicial de ejemplo
+    generate('Ejemplo: Juan Pérez');
+  </script>
+</body>
+</html>
