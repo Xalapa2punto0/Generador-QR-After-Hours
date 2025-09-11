@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="card">
-  <h1>Generador de QR con logo centrado</h1>
+  <h1>Generador de QR bien vergas para After Hours</h1>
   <input id="text" type="text" placeholder="Texto o URL" style="width:100%">
   <button id="gen">Generar QR</button>
   <canvas id="qrCanvas" width="300" height="300"></canvas>
@@ -52,12 +52,12 @@ function drawWithLogo(qrImg){
 
   // cargar logo
   const logo = new Image();
-  logo.src = 'logo.jpg';  // nombre de tu archivo de logo
+  logo.src = 'logo.png';  // nombre de tu archivo de logo
   logo.onload = ()=>{
     const logoSize = canvas.width * 0.3; // logo al 30% del ancho del QR
     const x = (canvas.width - logoSize) / 2;
     const y = (canvas.height - logoSize) / 2;
-    const margin = 8; // grosor del margen negro
+    const margin = 16; // grosor del margen negro
 
     // Dibujar marco negro
     ctx.fillStyle = '#000';
