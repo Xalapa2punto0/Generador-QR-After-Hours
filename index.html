@@ -5,13 +5,38 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>QR con logo y ojos redondeados</title>
 <style>
-  body{font-family:sans-serif;background:#f5f5f5;padding:20px}
-  .card{background:#fff;padding:20px;max-width:500px;margin:auto;
-        border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-  #qr{display:flex;justify-content:center;margin:20px 0}
-  input,button{padding:10px;font-size:16px;margin:6px 0;width:100%}
-  button{background:#0b69ff;color:#fff;border:none;border-radius:8px;
-         cursor:pointer;font-weight:600}
+  body{
+    font-family:sans-serif;
+    background:#f5f5f5;
+    padding:20px;
+  }
+  .card{
+    background:#fff;
+    padding:20px;
+    max-width:500px;
+    margin:auto;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+  }
+  #qr{
+    display:flex;
+    justify-content:center;
+    margin:20px 0;
+  }
+  input,button{
+    padding:10px;
+    font-size:16px;
+    margin:6px 0;
+    width:100%;
+  }
+  button{
+    background:#0b69ff;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+  }
 </style>
 </head>
 <body>
@@ -23,18 +48,21 @@
   <button id="shareBtn" style="display:none;">Compartir QR</button>
 </div>
 
-<!-- qrcode-styling desde CDN (ruta estable de jsdelivr) -->
+<!-- Librería qrcode-styling desde unpkg (funciona en GitHub Pages) -->
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 <script>
 const genBtn = document.getElementById('gen');
 const qrContainer = document.getElementById('qr');
 const shareBtn = document.getElementById('shareBtn');
 
-let qrCode; // guardaremos la instancia
+let qrCode;
 
 genBtn.addEventListener('click', () => {
   const text = document.getElementById('text').value.trim();
-  if(!text){ alert('Escribe un texto'); return; }
+  if(!text){
+    alert('Escribe un texto');
+    return;
+  }
 
   // Si ya existe un QR previo, eliminarlo
   qrContainer.innerHTML = '';
@@ -47,14 +75,14 @@ genBtn.addEventListener('click', () => {
     image: 'logo.png',
     imageOptions: {
       crossOrigin: 'anonymous',
-      margin: 8      // margen negro alrededor del logo
+      margin: 8      // ← margen negro alrededor del logo (como antes)
     },
     dotsOptions: {
       color: '#000000',
-      type: 'rounded' // puntos redondeados
+      type: 'rounded'
     },
     cornersSquareOptions: {
-      type: 'extra-rounded', // Ojos (detectores) redondeados
+      type: 'extra-rounded',
       color: '#000000'
     },
     cornersDotOptions: {
@@ -73,10 +101,10 @@ genBtn.addEventListener('click', () => {
 shareBtn.addEventListener('click', async ()=>{
   if (!qrCode) return;
 
-  // Exportar a blob para compartir
   const blob = await qrCode.getRawData('png');
 
-  if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'qr.png', {type:'image/png'})] })) {
+  if (navigator.share &&
+      navigator.canShare?.({ files: [new File([blob], 'qr.png', {type:'image/png'})] })) {
     const file = new File([blob], 'qr.png', { type: 'image/png' });
     navigator.share({
       files: [file],
@@ -84,7 +112,7 @@ shareBtn.addEventListener('click', async ()=>{
       text: 'Aquí está el código QR que generé'
     });
   } else {
-    // Fallback: enlace de WhatsApp sólo con texto
+    // Fallback: enlace de WhatsApp solo con texto
     const text = 'Mira este código QR: (adjunta la imagen manualmente)';
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,'_blank');
   }
