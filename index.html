@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QR con logo y borde cuadrado redondeado</title>
+<title> After Hours QR System </title>
 <style>
   body{
     font-family:sans-serif;
@@ -41,7 +41,7 @@
 </head>
 <body>
 <div class="card">
-  <h1>Generador de QR con logo y borde cuadrado redondeado</h1>
+  <h1>Generador de QR Bien Vergas After Hours</h1>
   <input id="text" type="text" placeholder="Texto o URL">
   <button id="gen">Generar QR</button>
   <div id="qr"></div>
@@ -56,7 +56,7 @@ const shareBtn = document.getElementById('shareBtn');
 let qrCode;
 
 // --- función que crea un logo con borde cuadrado y esquinas redondeadas ---
-async function logoConBordeCuadrado(src, borde = 36, radioEsquinas = 16){
+async function logoConBordeCuadrado(src, borde = 60, radioEsquinas = 30){
   return new Promise((resolve)=>{
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -107,7 +107,7 @@ genBtn.addEventListener('click', async () => {
   qrContainer.innerHTML = '';
 
   // genera el logo con borde negro cuadrado y esquinas redondeadas
-  const logoBordeado = await logoConBordeCuadrado('logo.png', 60, 20);
+  const logoBordeado = await logoConBordeCuadrado('logo.png', 60, 30);
 
   qrCode = new QRCodeStyling({
     width: 300,
@@ -135,10 +135,10 @@ shareBtn.addEventListener('click', async ()=>{
     navigator.share({
       files: [file],
       title: 'Código QR',
-      text: 'Aquí está el código QR que generé'
+      text: 'Esta es tu entrada'
     });
   } else {
-    const text = 'Mira este código QR: (adjunta la imagen manualmente)';
+    const text = 'Esta es tu entrada: (adjunta la imagen manualmente)';
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,'_blank');
   }
 });
