@@ -23,8 +23,8 @@
   <button id="shareBtn" style="display:none;">Compartir QR</button>
 </div>
 
-<!-- qrcode-styling desde CDN -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode-styling@1.6.0/lib/umd/index.min.js"></script>
+<!-- qrcode-styling desde CDN (ruta estable de jsdelivr) -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-styling@1.6.0/dist/qrcode-styling.js"></script>
 <script>
 const genBtn = document.getElementById('gen');
 const qrContainer = document.getElementById('qr');
@@ -44,7 +44,7 @@ genBtn.addEventListener('click', () => {
     height: 300,
     type: 'canvas',
     data: text,
-    image: 'logo.png',
+    image: 'logo.jpg',
     imageOptions: {
       crossOrigin: 'anonymous',
       margin: 8      // margen negro alrededor del logo
