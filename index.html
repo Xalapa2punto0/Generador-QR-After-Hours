@@ -56,7 +56,7 @@ const shareBtn = document.getElementById('shareBtn');
 let qrCode;
 
 // --- función que crea un logo con borde cuadrado y esquinas redondeadas ---
-async function logoConBordeCuadrado(src, borde = 8, radioEsquinas = 12){
+async function logoConBordeCuadrado(src, borde = 40, radioEsquinas = 16){
   return new Promise((resolve)=>{
     const img = new Image();
     img.crossOrigin = 'anonymous';
