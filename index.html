@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title> After Hours QR System </title>
+<title>QR cuadrado con logo y borde redondeado</title>
 <style>
   body{
     font-family:sans-serif;
@@ -41,13 +41,14 @@
 </head>
 <body>
 <div class="card">
-  <h1>Generador de QR Bien Vergas After Hours</h1>
+  <h1>Generador de QR cuadrado con logo y borde redondeado</h1>
   <input id="text" type="text" placeholder="Texto o URL">
   <button id="gen">Generar QR</button>
   <div id="qr"></div>
   <button id="shareBtn" style="display:none;">Compartir QR</button>
 </div>
 
+<!-- Librería QRCodeStyling -->
 <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 <script>
 const genBtn = document.getElementById('gen');
@@ -55,8 +56,8 @@ const qrContainer = document.getElementById('qr');
 const shareBtn = document.getElementById('shareBtn');
 let qrCode;
 
-// --- función que crea un logo con borde cuadrado y esquinas redondeadas ---
-async function logoConBordeCuadrado(src, borde = 60, radioEsquinas = 30){
+// función que crea un logo con borde negro cuadrado de esquinas redondeadas
+async function logoConBordeCuadrado(src, borde = 8, radioEsquinas = 12){
   return new Promise((resolve)=>{
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -66,13 +67,13 @@ async function logoConBordeCuadrado(src, borde = 60, radioEsquinas = 30){
       c.width = c.height = s;
       const ctx = c.getContext('2d');
 
-      // Borde negro cuadrado con esquinas redondeadas
+      // Marco negro cuadrado con esquinas redondeadas
       ctx.fillStyle = '#000';
       ctx.beginPath();
       dibujarRectRedondeado(ctx, 0, 0, s, s, radioEsquinas);
       ctx.fill();
 
-      // Logo centrado con clip también cuadrado redondeado
+      // Logo centrado recortado en cuadrado redondeado
       ctx.save();
       ctx.beginPath();
       dibujarRectRedondeado(ctx, borde, borde,
@@ -87,7 +88,7 @@ async function logoConBordeCuadrado(src, borde = 60, radioEsquinas = 30){
   });
 }
 
-// helper: dibuja un rectángulo de esquinas redondeadas
+// helper: rectángulo con esquinas redondeadas
 function dibujarRectRedondeado(ctx, x, y, w, h, r){
   ctx.moveTo(x + r, y);
   ctx.lineTo(x + w - r, y);
@@ -106,8 +107,8 @@ genBtn.addEventListener('click', async () => {
 
   qrContainer.innerHTML = '';
 
-  // genera el logo con borde negro cuadrado y esquinas redondeadas
-  const logoBordeado = await logoConBordeCuadrado('logo.png', 60, 30);
+  // Logo con borde negro cuadrado redondeado
+  const logoBordeado = await logoConBordeCuadrado('logo.png', 50, 25);
 
   qrCode = new QRCodeStyling({
     width: 300,
@@ -116,9 +117,9 @@ genBtn.addEventListener('click', async () => {
     data: text,
     image: logoBordeado,
     imageOptions: { margin:0 },
-    dotsOptions: { color:'#000', type:'rounded' },
-    cornersSquareOptions: { type:'extra-rounded', color:'#000' },
-    cornersDotOptions: { type:'dot', color:'#000' },
+    dotsOptions: { color:'#000', type:'square' }, // ← puntos cuadrados
+    cornersSquareOptions: { type:'square', color:'#000' }, // ← ojos cuadrados
+    cornersDotOptions: { type:'square', color:'#000' },
     backgroundOptions: { color:'#fff' }
   });
 
@@ -135,13 +136,14 @@ shareBtn.addEventListener('click', async ()=>{
     navigator.share({
       files: [file],
       title: 'Código QR',
-      text: 'Esta es tu entrada'
+      text: 'Aquí está el código QR que generé'
     });
   } else {
-    const text = 'Esta es tu entrada: (adjunta la imagen manualmente)';
+    const text = 'Mira este código QR: (adjunta la imagen manualmente)';
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,'_blank');
   }
 });
 </script>
 </body>
 </html>
+
