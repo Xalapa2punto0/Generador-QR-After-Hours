@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QR con logo centrado y borde blanco externo</title>
+<title>QR en alta resolución con logo centrado y borde blanco</title>
 <style>
   body{
     font-family:sans-serif;
@@ -22,10 +22,15 @@
     display:flex;
     justify-content:center;
     margin:20px 0;
-    background:#fff;        /* fondo blanco del contenedor */
-    padding:20px;           /* ← margen/borde blanco */
-    border-radius:12px;     /* ← esquinas redondeadas del borde */
+    background:#fff;        /* marco/borde blanco */
+    padding:20px;           /* grosor del marco */
+    border-radius:12px;     /* esquinas redondeadas del marco */
     box-sizing:border-box;
+  }
+  /* Reducción visual del canvas a 300px manteniendo resolución interna 600px */
+  #qr canvas {
+    width: 300px !important;
+    height: 300px !important;
   }
   input,button{
     padding:10px;
@@ -45,7 +50,7 @@
 </head>
 <body>
 <div class="card">
-  <h1>Generador de QR</h1>
+  <h1>Generador de QR en alta resolución</h1>
   <input id="text" type="text" placeholder="Texto o URL">
   <button id="gen">Generar QR</button>
   <div id="qr"></div>
@@ -67,22 +72,22 @@ genBtn.addEventListener('click', () => {
   qrContainer.innerHTML = '';
 
   qrCode = new QRCodeStyling({
-    width: 300,
-    height: 300,
+    width: 600,              // ← alta resolución
+    height: 600,             // ← alta resolución
     type: 'canvas',
     data: text,
-    image: 'logo.png',          // logo original sin borde
+    image: 'logo.jpg',
     imageOptions: {
       crossOrigin: 'anonymous',
-      margin: 0                 // sin margen adicional en el logo
+      margin: 0
     },
     dotsOptions: {
       color: '#000',
-      type: 'square'            // puntos cuadrados
+      type: 'square'
     },
     cornersSquareOptions: {
       type: 'square',
-      color: '#000'             // ojos cuadrados
+      color: '#000'
     },
     cornersDotOptions: {
       type: 'square',
